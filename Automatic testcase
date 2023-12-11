@@ -1,0 +1,107 @@
+package org.example;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.time.Instant;
+
+import static java.lang.Thread.sleep;
+
+public class Cineplex {
+    private WebDriver driver;
+    @BeforeEach
+    public void setUp() {
+        System.out.println("Executing method setUp()");
+        WebDriverManager.chromedriver().setup();
+         driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        //waits up to 15 seconds if the pages isnt loaded until the fully loading
+    }
+
+    @AfterEach
+    public void tearDown() {
+        System.out.println("Executing method tearDown()");
+        driver.close();
+    }
+    @Test
+    public void search () throws InterruptedException {
+        driver.get("https://www.cineplexx.al/");
+        driver.findElement(By.xpath("//*[@id=\"main-nav\"]/div[1]/form/div/input[1]")).sendKeys("NË KUADËR TË DASHURISË");
+        sleep(5000);
+        driver.findElement(By.xpath("//*[@id=\"main-nav\"]/div[1]/form/div/input[1]")).sendKeys(Keys.ENTER);
+        sleep(5000);
+
+    }
+
+    @Test
+    public void chooseButton() throws InterruptedException {
+        driver.get("https://www.cineplexx.al/filma/");
+        sleep(5000);
+        driver.findElement(By.xpath("//label[@class='inline'][contains(@for,'chrono')]")).click();
+        sleep(5000);
+
+    }
+/*
+@Test
+    public void laidiesNight() throws InterruptedException {
+        driver.get("https://www.cineplexx.al/evente/");
+    sleep(5000);
+        driver.findElement(By.xpath("/html/body/div[2]/div[4]/div/div[4]/ul/li[2]/a")).click();
+        sleep(5000);
+    }
+*/
+    @Test
+    public void successfulLogin() throws InterruptedException {
+
+
+        driver.get("https://www.cineplexx.al/");
+
+        driver.findElement(By.xpath("//a[@href='#login']")).click(); //deri ketu e kam bere
+        sleep(5000);
+
+        //2. In the field 'adres email' enter: bajraktaridrinalda@gmail.com.
+        driver.findElement(By.xpath("//input[@name='username']")).sendKeys("bajraktaridrinalda@gmail.com");
+        sleep(5000);
+
+
+        //3. In the 'Password' field enter: admin123.
+        driver.findElement(By.xpath("//input[@name='password']")).sendKeys("Test012023");
+
+        sleep(5000);
+
+
+        //4. Click the Login button.
+        driver.findElement(By.xpath("//button[@type=\'submit\']")).click();
+        sleep(5000);
+
+    }
+
+    @Test
+    public void selectSeat() throws InterruptedException {
+        driver.get("https://www.cineplexx.al/filma/");
+        sleep(5000);
+        driver.findElement(By.xpath("//a[contains(text(),'The Kill Room')]")).click();
+
+        String expectedURLEndsWithAfterLoggedIn = "/movie-al/The-Kill-Room/";
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlContains(expectedURLEndsWithAfterLoggedIn));
+        String actualURL = driver.getCurrentUrl();
+        Assertions.assertTrue(actualURL.contains(expectedURLEndsWithAfterLoggedIn));
+        Assertions.assertTrue(driver.findElement(By.xpath("//td[contains(text(),'The Kill Room')]")).isDisplayed());
+        String text = driver.findElement(By.xpath("//td[contains(text(),'The Kill Room')]")).getText();
+        Assertions.assertEquals("The Kill Room", text);
+        sleep(5000);
+        
+
+    }
+}
